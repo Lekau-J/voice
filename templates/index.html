@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with AI</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="message-container"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            var messageContainer = document.getElementById("message-container");
+
+            // Display user input
+            var userMessage = document.createElement("div");
+            userMessage.className = "user-message";
+            userMessage.textContent = userInput;
+            messageContainer.appendChild(userMessage);
+
+            // Send user input to backend
+            fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ user_input: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display AI response
+                var botMessage = document.createElement("div");
+                botMessage.className = "bot-message";
+                botMessage.textContent = data.response;
+                messageContainer.appendChild(botMessage);
+            })
+            .catch(error => console.error("Error:", error));
+
+            // Clear user input
+            document.getElementById("user-input").value = "";
+        }
+    </script>
+</body>
+</html>
